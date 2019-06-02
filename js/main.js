@@ -1,6 +1,4 @@
-const baseURL = "https://swapi.co/api/";
-
-function getData(type, cb) {
+function getData(url, cb) {
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function() {
@@ -9,46 +7,55 @@ function getData(type, cb) {
         }
     };
 
-    xhr.open("GET", baseURL + type + "/");
+    xhr.open("GET", url);
     xhr.send();
 }
 
 function getTableHeaders(obj) {
     var tableHeaders = [];
+
     Object.keys(obj).forEach(function(key) {
         tableHeaders.push(`<td>${key}</td>`);
     });
-    
+
     return `<tr>${tableHeaders}</tr>`;
 }
 
-function writeToDocument(type) {
-    
-    var tableRows = [];                             // create table rows as an empty array
-    
-    var el = document.getElementById("data");         // create an element for the data
-    el.innerHTML = "";                                // clear the inner element. Each time you click on an object it will clear and display
-                                                      // rather than adding to the end
-    getData(type, function(data) {
+function generatePaginationButtons(next, prev) {
+    if (next && prev) {
+        return `<button onclick="writeToDocument('${prev}')">Previous</button>
+                <button onclick="writeToDocument('${next}')">Next</button>`;
+    } else if (next && !prev) {
+        return `<button onclick="writeToDocument('${next}')">Next</button>`;
+    } else if (!next && prev) {
+        return `<button onclick="writeToDocument('${prev}')">Previous</button>`;
+    }
+}
+
+function writeToDocument(url) {
+    var tableRows = [];
+    var el = document.getElementById("data");
+
+    getData(url, function(data) {
+        var pagination = "";
+
+        if (data.next || data.previous) {
+            pagination = generatePaginationButtons(data.next, data.previous);
+        }
         data = data.results;
-        
-        var tableHeaders = getTableHeaders(data[0]);   // create table headers
+        var tableHeaders = getTableHeaders(data[0]);
 
         data.forEach(function(item) {
-            var dataRow = [];                           // create a data row as an empty array
-            
-            Object.keys(item).forEach(function(key) {    // To make it display more neatly on the page, truncate the data
-                var rowData = item[key].toString();      // make it a string
-                var truncatedData = rowData.substring(0, 15);        // truncate it to 15 characters
-                
-                dataRow.push(`<td>${truncatedData}</td>`);    // push the truncated data to the row
+            var dataRow = [];
+
+            Object.keys(item).forEach(function(key) {
+                var rowData = item[key].toString();
+                var truncatedData = rowData.substring(0, 15);
+                dataRow.push(`<td>${truncatedData}</td>`);
             });
-            tableRows.push(`<tr>${dataRow}</tr>`);                      // push the data row into the table
-            
-           
-            
+            tableRows.push(`<tr>${dataRow}</tr>`);
         });
-        
-        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>`;
+
+        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>${pagination}`;
     });
 }
