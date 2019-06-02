@@ -23,6 +23,9 @@ function getTableHeaders(obj) {
 }
 
 function writeToDocument(type) {
+    
+    var tableRows = [];                             // create table rows as an empty array
+    
     var el = document.getElementById("data");         // create an element for the data
     el.innerHTML = "";                                // clear the inner element. Each time you click on an object it will clear and display
                                                       // rather than adding to the end
@@ -32,10 +35,17 @@ function writeToDocument(type) {
         var tableHeaders = getTableHeaders(data[0]);   // create table headers
 
         data.forEach(function(item) {
+            var dataRow = [];                           // create a data row as an empty array
+            
+            Object.keys(item).forEach(function(key) {
+                dataRow.push(`<td>${item[key]}</td>`);    // this will get the value in the key, rather than the key name
+            });
+            tableRows.push(dataRow);                      // push the data row into the table
+            
            
-            // el.innerHTML += "<p>" + item.name + "</p>";              // display the data in a par element for clarity
+            
         });
         
-        el.innerHTML = `<tr>${tableHeaders}</tr>`;
+        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>`;
     });
 }
