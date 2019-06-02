@@ -1,6 +1,6 @@
-const baseURL = "https://swapi.co/api/";            // create constant for the base URL we're using
+const baseURL = "https://swapi.co/api/";
 
-function getData(type, cb) {                    // pass in type (people, vehicles, films, etc) to getData function
+function getData(type, cb) {
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function() {
@@ -9,12 +9,19 @@ function getData(type, cb) {                    // pass in type (people, vehicle
         }
     };
 
-    xhr.open("GET", baseURL + type + "/");              // pass in base URL + type + '/'
+    xhr.open("GET", baseURL + type + "/");
     xhr.send();
 }
 
-function writeToDocument(type) {              // parameter "type" comes from api - people, films, vehicles, etc
-    getData(type, function(data) {            // calling an anonymous function
-        document.getElementById("data").innerHTML = data;
+function writeToDocument(type) {
+    var el = document.getElementById("data");         // create an element for the data
+    el.innerHTML = "";                                // clear the inner element. Each time you click on an object it will clear and display
+                                                      // rather than adding to the end
+    getData(type, function(data) {
+        data = data.results;
+
+        data.forEach(function(item) {
+            el.innerHTML += "<p>" + item.name + "</p>";              // display the data in a par element for clarity
+        });
     });
 }
