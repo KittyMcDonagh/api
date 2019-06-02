@@ -37,10 +37,13 @@ function writeToDocument(type) {
         data.forEach(function(item) {
             var dataRow = [];                           // create a data row as an empty array
             
-            Object.keys(item).forEach(function(key) {
-                dataRow.push(`<td>${item[key]}</td>`);    // this will get the value in the key, rather than the key name
+            Object.keys(item).forEach(function(key) {    // To make it display more neatly on the page, truncate the data
+                var rowData = item[key].toString();      // make it a string
+                var truncatedData = rowData.substring(0, 15);        // truncate it to 15 characters
+                
+                dataRow.push(`<td>${truncatedData}</td>`);    // push the truncated data to the row
             });
-            tableRows.push(dataRow);                      // push the data row into the table
+            tableRows.push(`<tr>${dataRow}</tr>`);                      // push the data row into the table
             
            
             
